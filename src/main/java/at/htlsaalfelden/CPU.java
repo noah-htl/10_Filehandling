@@ -30,4 +30,9 @@ public class CPU {
     public double getCache() {
         return cache;
     }
+
+    @Override
+    public String toString() {
+        return "CPU:" + id + "\t\t" + speed + "\t\t" + ram + "\t\t" + cache;
+    }
 }

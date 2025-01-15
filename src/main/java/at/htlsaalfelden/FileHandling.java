@@ -1,8 +1,6 @@
 package at.htlsaalfelden;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -78,5 +76,14 @@ public class FileHandling {
         fid.set(cpu, id);
 
         return cpu;
+    }
+
+    public void write(List<CPU> cpus) throws IOException {
+        FileWriter fileWriter = new FileWriter(this.file);
+        for(CPU cpu : cpus) {
+            fileWriter.write(cpu.toString() + "\n");
+        }
+
+        fileWriter.close();
     }
 }
