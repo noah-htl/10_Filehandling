@@ -17,5 +17,29 @@ public class Main {
 
         FileHandling writing = new FileHandling("output.txt");
         writing.write(cpus);
+
+
+        FileHandling jsonOut = new FileHandling("output.json");
+        jsonOut.writejson(cpus);
+
+        List<CPU> cpus2 = jsonOut.readJson();
+
+        if(cpus.size() != cpus2.size()) {
+            throw new RuntimeException("Not same size");
+        }
+
+        for (CPU cpu : cpus) {
+            if(!cpus2.contains(cpu)) {
+                throw new RuntimeException(cpu + " not in cpus2");
+            }
+        }
+
+        for (CPU cpu : cpus2) {
+            if(!cpus.contains(cpu)) {
+                throw new RuntimeException(cpu + " not in cpus");
+            }
+        }
+
+        System.out.println("Same List :)");
     }
 }

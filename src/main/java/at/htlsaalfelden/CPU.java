@@ -35,4 +35,20 @@ public class CPU {
     public String toString() {
         return "CPU:" + id + "\t\t" + speed + "\t\t" + ram + "\t\t" + cache;
     }
+
+    @Override
+    public final boolean equals(Object object) {
+        if (!( object instanceof CPU cpu )) return false;
+
+        return id.equals(cpu.id) && speed.equals(cpu.speed) && ram.equals(cpu.ram) && cache.equals(cpu.cache);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + speed.hashCode();
+        result = 31 * result + ram.hashCode();
+        result = 31 * result + cache.hashCode();
+        return result;
+    }
 }

@@ -1,10 +1,10 @@
 package at.htlsaalfelden;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.*;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -85,5 +85,19 @@ public class FileHandling {
         }
 
         fileWriter.close();
+    }
+
+    public void writejson(List<CPU> cpus) throws IOException {
+        Gson gson = new Gson();
+        FileWriter fileWriter = new FileWriter(this.file);
+        fileWriter.write(gson.toJson(cpus));
+        fileWriter.close();
+    }
+
+    public List<CPU> readJson() throws IOException {
+        Gson gson = new Gson();
+        FileReader reader = new FileReader(this.file);
+        Type listType = new TypeToken<ArrayList<CPU>>(){}.getType();
+        return gson.fromJson(reader, listType);
     }
 }
