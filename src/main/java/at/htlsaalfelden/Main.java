@@ -10,19 +10,19 @@ public class Main {
         FileHandling fileHandling = new FileHandling("input.txt");
         List<CPU> cpus = new ArrayList<>();
         try {
-            cpus = fileHandling.readFile();
+            cpus = fileHandling.readFile(new TxtConverter());
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
 
         FileHandling writing = new FileHandling("output.txt");
-        writing.write(cpus);
+        writing.write(new TxtConverter(), cpus);
 
 
         FileHandling jsonOut = new FileHandling("output.json");
-        jsonOut.writejson(cpus);
+        jsonOut.write(new JSONConverter(), cpus);
 
-        List<CPU> cpus2 = jsonOut.readJson();
+        List<CPU> cpus2 = jsonOut.readFile(new JSONConverter());
 
         if(cpus.size() != cpus2.size()) {
             throw new RuntimeException("Not same size");

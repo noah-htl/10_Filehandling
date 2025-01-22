@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.*;
 import java.lang.reflect.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -18,86 +19,14 @@ public class FileHandling {
         this.file = new File(filename);
     }
 
-    public List<CPU> readFile() throws FileNotFoundException {
-        Scanner scanner = new Scanner(new FileInputStream(this.file));
-
-        List<CPU> result = new ArrayList<>();
-        List<String> currentObject = null;
-
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-
-            if(line.equals("BEGIN")) {
-                currentObject = new ArrayList<>();
-            } else if(line.equals("END")) {
-                try {
-                    result.add(this.transform(currentObject));
-                } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
-                         IllegalAccessException | NoSuchFieldException e) {
-                    throw new RuntimeException(e);
-                }
-                currentObject = null;
-            } else {
-                currentObject.add(line.substring(1));
-            }
-        }
-
-        return result;
+    public List<CPU> readFile(IConverter<CPU> converter) throws IOException {
+        return converter.fromString(Files.readString(this.file.toPath()));
     }
 
-    private CPU transform(List<String> strings) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
-        int id = Integer.parseInt(strings.getFirst().substring(4));
-
-        Field[] fields = CPU.class.getDeclaredFields();
-
-        Constructor<CPU> c = CPU.class.getDeclaredConstructor();
-        c.setAccessible(true);
-        CPU cpu = c.newInstance();
-
-        for (int i = 0; i < fields.length; i++) {
-            fields[i].setAccessible(true);
-            String n = fields[i].getName().toLowerCase();
-            Class<?> type = fields[i].getType();
-
-            Method method = type.getDeclaredMethod("valueOf", String.class);
-
-            for(String s : strings) {
-                String[] l = s.toLowerCase().strip().split("=");
-                if(l[0].equals(n)) {
-                    String v = l[1];
-
-                    fields[i].set(cpu, method.invoke(null, v));
-                }
-            }
-        }
-
-        Field fid = CPU.class.getDeclaredField("id");
-        fid.setAccessible(true);
-        fid.set(cpu, id);
-
-        return cpu;
-    }
-
-    public void write(List<CPU> cpus) throws IOException {
+    public void write(IConverter<CPU> converter, List<CPU> cpus) throws IOException {
         FileWriter fileWriter = new FileWriter(this.file);
-        for(CPU cpu : cpus) {
-            fileWriter.write(cpu.toString() + "\n");
-        }
+        fileWriter.write(converter.toString(cpus));
 
         fileWriter.close();
-    }
-
-    public void writejson(List<CPU> cpus) throws IOException {
-        Gson gson = new Gson();
-        FileWriter fileWriter = new FileWriter(this.file);
-        fileWriter.write(gson.toJson(cpus));
-        fileWriter.close();
-    }
-
-    public List<CPU> readJson() throws IOException {
-        Gson gson = new Gson();
-        FileReader reader = new FileReader(this.file);
-        Type listType = new TypeToken<ArrayList<CPU>>(){}.getType();
-        return gson.fromJson(reader, listType);
     }
 }
